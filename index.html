@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+      /* Add custom styles for positioning the button */
+      #moveButton {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      /* Hidden initially */
+      #giftBox {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        background-color: #f7c9f7;
+        border: 2px solid #a5a5a5;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      #ghostImage {
+        display: none;
+        position: fixed; /* Make it fixed so it covers the entire page */
+        top: 0;
+        left: 0;
+        width: 100vw; /* Cover the entire viewport width */
+        height: 100vh; /* Cover the entire viewport height */
+        object-fit: cover; /* Ensure the image covers the screen properly */
+        transition: transform 0.5s ease-in-out; /* Quick transition */
+        z-index: 9999; /* Ensure it appears above other elements */
+      }
+
+      /* Zoom-in effect (Cover entire page) */
+      .zoom-in {
+        transform: scale(10); /* Zoom in extremely large */
+      }
+
+      /* Shaking effect */
+      .shake {
+        animation: shake 0.5s ease-out; /* Shake the image */
+      }
+
+      /* Keyframes for shake animation */
+      @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        50% { transform: translateX(10px); }
+        75% { transform: translateX(-10px); }
+        100% { transform: translateX(0); }
+      }
+
+      /* Center the Yes/No Buttons */
+      #yesNoButtons {
+        display: none;
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      /* Styling for No and Yes buttons */
+      #noButton {
+        margin-right: 20px;
+      }
+
+      #yesButton {
+        font-size: 3rem; /* Make Yes button larger */
+        padding: 20px 40px;
+      }
+
+      /* Hide the initial message when the image appears */
+      #initialMessage {
+        display: block;
+      }
+
+      #ghostImageContainer {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="initialMessage" class="text-center mt-5">Klik tombol dibawah ini untuk mengklaim Hadiah kamu</h1>
+    
+    <button id="moveButton" class="btn btn-primary mt-3" onclick="moveButton()">Klaim Hadiah</button>
+
+    <!-- The hidden gift box -->
+    <div id="giftBox" class="btn btn-success">
+      Klaim Hadiah
+    </div>
+
+    <!-- The Yes/No buttons -->
+    <div id="yesNoButtons">
+      <h2>Klaim Hadiah?</h2>
+      <button id="noButton" class="btn btn-danger">No</button>
+      <button id="yesButton" class="btn btn-success">Yes</button>
+    </div>
+
+    <!-- The hidden ghost image container -->
+    <div id="ghostImageContainer">
+      <img id="ghostImage" src="https://static.wikia.nocookie.net/villains/images/1/17/SmileDog2ndHD.jpg" alt="Spooky Ghost" />
+    </div>
+
+    <script>
+      let clickCount = 0; // Count how many times the button has been clicked
+      let noClickCount = 0; // Count how many times the No button has been clicked
+
+      function moveButton() {
+        // Get the button element
+        const button = document.getElementById("moveButton");
+
+        // Get the width and height of the window
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        // Generate random positions within the window
+        const randomX = Math.floor(Math.random() * (windowWidth - button.offsetWidth));
+        const randomY = Math.floor(Math.random() * (windowHeight - button.offsetHeight));
+
+        // Move the button to the random position
+        button.style.left = randomX + "px";
+        button.style.top = randomY + "px";
+
+        // Increase click count
+        clickCount++;
+
+        // When clicked 5 times, hide the button and show the gift box
+        if (clickCount === 5) {
+          button.style.display = "none"; // Hide the button
+          const giftBox = document.getElementById("giftBox");
+          giftBox.style.display = "block"; // Show the gift box
+        }
+      }
+
+      // When the gift box is clicked, show the Yes/No buttons
+      document.getElementById("giftBox").onclick = function() {
+        const yesNoButtons = document.getElementById("yesNoButtons");
+        yesNoButtons.style.display = "block"; // Show the Yes/No buttons
+        const giftBox = document.getElementById("giftBox");
+        giftBox.style.display = "none"; // Hide the gift box
+      };
+
+      // When the No button is clicked
+      document.getElementById("noButton").onclick = function() {
+        noClickCount++;
+
+        if (noClickCount === 1) {
+          alert("Kenapa No?");
+        } else if (noClickCount === 2) {
+          alert("Harus pilih yes jangan no");
+        } else if (noClickCount === 3) {
+          document.getElementById("noButton").style.display = "none"; // Hide the No button
+        }
+      };
+
+      // When the Yes button is clicked, show the image with jumpscare effect
+      document.getElementById("yesButton").onclick = function() {
+        // Hide the initial message when the image appears
+        document.getElementById("initialMessage").style.display = "none";
+
+        const ghostImageContainer = document.getElementById("ghostImageContainer");
+        const ghostImage = document.getElementById("ghostImage");
+
+        ghostImageContainer.style.display = "block"; // Show the ghost image container
+        ghostImage.style.display = "block"; // Show the ghost image
+
+        // Apply zoom-in to fill the page and shake effect for jumpscare
+        ghostImage.classList.add("zoom-in", "shake"); // Add both zoom-in and shake
+
+        // After 1 second, remove the shaking effect
+        setTimeout(() => {
+          ghostImage.classList.remove("shake");
+        }, 1000); // Shake effect lasts for 1 second
+
+        // After 3 seconds, remove the zoom-in effect (image will zoom out)
+        setTimeout(() => {
+          ghostImage.classList.remove("zoom-in"); // Remove the zoom-in effect
+        }, 3000); // Zoom-out after 3 seconds
+      };
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  </body>
+</html>
